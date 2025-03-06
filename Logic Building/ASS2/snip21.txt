@@ -1,0 +1,12 @@
+public class Main { 
+ public static void main(String[] args) { 
+ System.out.println("Hello, World!"); 
+ // Missing closing brace here 
+}
+
+
+
+
+/*error: file not found: snip21.java
+Usage: javac <options> <source files>
+use --help for a list of possible options*/ 
