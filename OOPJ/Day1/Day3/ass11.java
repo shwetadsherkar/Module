@@ -1,0 +1,32 @@
+class Q11 
+{
+    public static void main(String[] args) 
+	{
+        int[] arr = {1, 4, 20, 3, 10, 5};
+        int S = 33;
+        findSubarray(arr, S);
+    }
+
+    public static void findSubarray(int[] arr, int S)
+	{
+        int start = 0, current_sum = 0;
+        for (int end = 0; end < arr.length; end++)
+			{
+            current_sum += arr[end];
+
+
+            while (current_sum > S && start <= end) 
+			{
+                current_sum -= arr[start++];
+            }
+
+            if (current_sum == S)
+				{
+                System.out.println("Subarray found from index " + start + " to " + end);
+                return;
+            }
+        }
+
+        System.out.println("No subarray with given sum found.");
+    }
+}

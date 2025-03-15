@@ -1,0 +1,24 @@
+class Q04 
+{
+    public static void main(String[] args)
+	{
+        int[] array = {3, 1, 4, 7, 5, 9, 2, 6, 8};
+        int evenCount = 0;
+        int oddCount = 0;
+
+        for (int num : array)
+		{
+            if (num % 2 == 0) 
+			{
+                evenCount++;
+            } 
+			else
+			{
+                oddCount++;
+            }
+        }
+
+        System.out.println("Number of even numbers: " + evenCount);
+        System.out.println("Number of odd numbers: " + oddCount);
+    }
+}
