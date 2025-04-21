@@ -1,0 +1,162 @@
+SQL Exercise 3
+
+1. Display all the Supplier names with the initial letter capital.
+---> SELECT CONCAT(UPPER(SUBSTRING(Sname, 1, 1)), LOWER(SUBSTRING(Sname, 2)))from supplier;
++-------------------------------------------------------------------+
+| CONCAT(UPPER(SUBSTRING(Sname, 1, 1)), LOWER(SUBSTRING(Sname, 2))) |
++-------------------------------------------------------------------+
+| Supplier1                                                         |
+| Supplier2                                                         |
+| Supplier3                                                         |
+| Supplier4                                                         |
+| Bloke                                                             |
++-------------------------------------------------------------------+
+
+2. Display all the Supplier names in upper case.
+mysql> select upper(sname) from supplier;
++--------------+
+| upper(sname) |
++--------------+
+| SUPPLIER1    |
+| SUPPLIER2    |
+| SUPPLIER3    |
+| SUPPLIER4    |
+| SUPPLIER8    |
+| SUPPLIER5    |
+| SUPPLIER6    |
+| SUPPLIER11   |
+| SUPPLIER10   |
+| BLOKE        |
+| BLOKE        |
++--------------+
+
+3. Display all the Supplier names in lower case.
+mysql> select lower(sname) from supplier;
++--------------+
+| lower(sname) |
++--------------+
+| supplier1    |
+| supplier2    |
+| supplier3    |
+| supplier4    |
+| supplier8    |
+| supplier5    |
+| supplier6    |
+| supplier11   |
+| supplier10   |
+| bloke        |
+| bloke        |
++--------------+
+
+4. Display all the Supplier names padded to 25 characters, with spaces on the left.
+mysql> select lpad(sname,25,' ')from supplier;
++---------------------------+
+| lpad(sname,25,' ')        |
++---------------------------+
+|                 Supplier1 |
+|                 Supplier2 |
+|                 Supplier3 |
+|                 supplier4 |
+|                 Supplier8 |
+|                 Supplier5 |
+|                 Supplier6 |
+|                Supplier11 |
+|                Supplier10 |
+|                     BLOKE |
+|                     BLOKE |
++---------------------------+
+
+5. Display all the Supplier names (with ‘la’ replaced by ‘ro’).
+mysql> select replace(sname,'li','ro')from supplier;
++--------------------------+
+| replace(sname,'li','ro') |
++--------------------------+
+| Supproer1                |
+| Supproer2                |
+| Supproer3                |
+| supproer4                |
+| Supproer8                |
+| Supproer5                |
+| Supproer6                |
+| Supproer11               |
+| Supproer10               |
+| BLOKE                    |
+| BLOKE                    |
++--------------------------+
+HINT: REPLACE.
+
+6. Implement the above command such that ‘l’ is replaced with ‘r’ and ‘a’ is replaced with ‘o’.
+---> select replace(replace(sname,'l','r'),'e','o') from supplier;
++-----------------------------------------+
+| replace(replace(sname,'l','r'),'e','o') |
++-----------------------------------------+
+| Supprior1                               |
+| Supprior2                               |
+| Supprior3                               |
+| supprior4                               |
+| Supprior8                               |
+| Supprior5                               |
+| Supprior6                               |
+| Supprior11                              |
+| Supprior10                              |
+| BLOKE                                   |
+| BLOKE                                   |
++-----------------------------------------+
+
+7. Display the Supplier names and the lengths of the names.
+mysql> select length(sname) from supplier;
++---------------+
+| length(sname) |
++---------------+
+|             9 |
+|             9 |
+|             9 |
+|             9 |
+|             9 |
+|             9 |
+|             9 |
+|            10 |
+|            10 |
+|             5 |
+|             5 |
++---------------+
+
+8. Use the soundex function to search for a supplier by the name of ‘BLOKE’.
+mysql> select  * from supplier where soundex(sname)=soundex('BLOKE');
++------+-------+--------+--------+
+| S#   | Sname | Status | City   |
++------+-------+--------+--------+
+| a1   | BLOKE |     10 | Mumbai |
+| a2   | BLOKE |     20 | Paris  |
++------+-------+--------+--------+
+9. Display the Supplier name and the status (as Ten, Twenty, Thirty, etc.).
+-----> SELECT Sname,
+    ->        CASE
+    ->            WHEN Status = 10 THEN 'Ten'
+    ->            WHEN Status = 20 THEN 'Twenty'
+    ->            WHEN Status = 30 THEN 'Thirty'
+    ->            ELSE 'Other'
+    ->        END AS StatusDescription
+    -> FROM Supplier;
++------------+-------------------+
+| Sname      | StatusDescription |
++------------+-------------------+
+| Supplier1  | Ten               |
+| Supplier2  | Twenty            |
+| Supplier3  | Thirty            |
+| supplier4  | Other             |
+| Supplier8  | Other             |
+| Supplier5  | Other             |
+| Supplier6  | Other             |
+| Supplier11 | Other             |
+| Supplier10 | Other             |
+| BLOKE      | Ten               |
+| BLOKE      | Twenty            |
++------------+-------------------+
+10. Display the current day (e.g. Thursday).
+mysql> select dayname(curdate());
++--------------------+
+| dayname(curdate()) |
++--------------------+
+| Sunday             |
++--------------------+

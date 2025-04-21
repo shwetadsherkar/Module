@@ -1,0 +1,75 @@
+Assignment – 12
+Using the operators IN, ANY, and ALL.
+
+1) Write a query that selects all customers whose ratings are equal to or greater than ANY of Serres’.
+-----> SELECT cname, rating
+    -> FROM Customers
+    -> WHERE rating >= ANY (
+    ->     SELECT rating
+    ->     FROM Customers
+    ->     WHERE cname = 'Serres'
+    -> );
++--------+--------+
+| cname  | rating |
++--------+--------+
+| Serres |    350 |
++--------+--------+
+
+2) Write a query using ANY or ALL that will find all salespeople who have no customers located in their city.
+----> SELECT s.snum, s.sname, s.city
+    -> FROM Salespeople s
+    -> WHERE s.city <> ALL (
+    ->     SELECT c.city
+    ->     FROM Customers c
+    ->     WHERE c.snum = s.snum
+    -> );
++------+---------+-----------+
+| snum | sname   | city      |
++------+---------+-----------+
+| 1004 | Motika  | London    |
+| 1007 | Rifkin  | Barcelona |
+| 1003 | Axelrod | New York  |
+| 1006 | Jack    | Pune      |
++------+---------+-----------+
+
+3) Write a query that selects all orders for amounts greater than any for the customers in London.
+-----> SELECT *
+    -> FROM Orders
+    -> WHERE  amt > ANY (
+    ->     SELECT  amt
+    ->     FROM Orders o
+    ->     JOIN Customers c ON o.cnum = c.cnum
+    ->     WHERE c.city = 'London'
+    -> );
++------+---------+------------+------+------+
+| Onum | Amt     | Odate      | Cnum | Snum |
++------+---------+------------+------+------+
+| 3002 | 1900.10 | 1990-10-03 | 2007 | 1004 |
+| 3005 | 5160.45 | 1990-10-03 | 2003 | 1002 |
+| 3006 | 1098.16 | 1990-10-03 | 2008 | 1007 |
+| 3009 | 1713.23 | 1990-10-04 | 2002 | 1003 |
+| 3008 | 4723.00 | 1990-10-05 | 2006 | 1001 |
+| 3010 | 1309.95 | 1990-10-06 | 2004 | 1002 |
+| 3011 | 9891.88 | 1990-10-06 | 2006 | 1001 |
++------+---------+------------+------+------+
+
+4) Write the above query using MIN or MAX.
+mysql> SELECT *
+    -> FROM Orders
+    -> WHERE amt > (
+    ->     SELECT MIN(amt)
+    ->     FROM Orders o
+    ->     JOIN Customers c ON o.cnum = c.cnum
+    ->     WHERE c.city = 'London'
+    -> );
++------+---------+------------+------+------+
+| Onum | Amt     | Odate      | Cnum | Snum |
++------+---------+------------+------+------+
+| 3002 | 1900.10 | 1990-10-03 | 2007 | 1004 |
+| 3005 | 5160.45 | 1990-10-03 | 2003 | 1002 |
+| 3006 | 1098.16 | 1990-10-03 | 2008 | 1007 |
+| 3009 | 1713.23 | 1990-10-04 | 2002 | 1003 |
+| 3008 | 4723.00 | 1990-10-05 | 2006 | 1001 |
+| 3010 | 1309.95 | 1990-10-06 | 2004 | 1002 |
+| 3011 | 9891.88 | 1990-10-06 | 2006 | 1001 |
++------+---------+------------+------+------+

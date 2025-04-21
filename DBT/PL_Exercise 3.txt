@@ -1,0 +1,246 @@
+
+MySQL
+Exercise 3
+
+1. Write a program containing a loop that iterates from 1 to 1000 using a variable I, which is incremented each time around the loop. The program should output the value of I every hundred iterations (i.e., the output should be 100, 200, etc.).
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE LoopIterations()
+    -> BEGIN
+    ->     DECLARE i INT DEFAULT 1;
+    ->
+    ->     WHILE i <= 1000 DO
+    ->         IF i % 100 = 0 THEN
+    ->             SELECT CONCAT('The value of i is: ', i) AS OutputMessage;
+    ->         END IF;
+    ->         SET i = i + 1;
+    ->     END WHILE;
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL LoopIterations();
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 100 |
++------------------------+
+1 row in set (0.01 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 200 |
++------------------------+
+1 row in set (0.02 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 300 |
++------------------------+
+1 row in set (0.03 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 400 |
++------------------------+
+1 row in set (0.04 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 500 |
++------------------------+
+1 row in set (0.05 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 600 |
++------------------------+
+1 row in set (0.06 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 700 |
++------------------------+
+1 row in set (0.07 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 800 |
++------------------------+
+1 row in set (0.09 sec)
+
++------------------------+
+| OutputMessage          |
++------------------------+
+| The value of i is: 900 |
++------------------------+
+1 row in set (0.10 sec)
+
++-------------------------+
+| OutputMessage           |
++-------------------------+
+| The value of i is: 1000 |
++-------------------------+
+
+2. Write a program that examines all the numbers from 1 to 999, displaying all those for which the sum of the cubes of the digits equal the number itself.
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE FindArmstrongNumbers()
+    -> BEGIN
+    ->     DECLARE i INT DEFAULT 1;
+    ->     DECLARE digit1 INT;
+    ->     DECLARE digit2 INT;
+    ->     DECLARE digit3 INT;
+    ->     DECLARE sum INT;
+    ->
+    ->     WHILE i <= 999 DO
+    ->         SET digit1 = i DIV 100; -- Hundreds place
+    ->         SET digit2 = (i DIV 10) % 10; -- Tens place
+    ->         SET digit3 = i % 10; -- Units place
+    ->
+    ->         SET sum = POW(digit1, 3) + POW(digit2, 3) + POW(digit3, 3);
+    ->
+    ->         IF sum = i THEN
+    ->             SELECT i AS ArmstrongNumber;
+    ->         END IF;
+    ->
+    ->         SET i = i + 1;
+    ->     END WHILE;
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL FindArmstrongNumbers();
++-----------------+
+| ArmstrongNumber |
++-----------------+
+|               1 |
++-----------------+
+1 row in set (0.01 sec)
+
++-----------------+
+| ArmstrongNumber |
++-----------------+
+|             153 |
++-----------------+
+1 row in set (0.02 sec)
+
++-----------------+
+| ArmstrongNumber |
++-----------------+
+|             370 |
++-----------------+
+1 row in set (0.04 sec)
+
++-----------------+
+| ArmstrongNumber |
++-----------------+
+|             371 |
++-----------------+
+1 row in set (0.05 sec)
+
++-----------------+
+| ArmstrongNumber |
++-----------------+
+|             407 |
++-----------------+
+
+3. Write a program that Selects from any table a minimum and maximum value for a radius, along with an increment factor, and generates a series of radii by repeatedly adding the increment to the minimum until the maximum is reached. For each value of the radius, compute and display the circumference, area, and volume of the sphere. (Be sure to include both the maximum and the minimum values.).
+
+4. A palindrome is a word that is spelled the same forward and backward, such as level, radar, etc. Write a program to Selects from any table a five letter word and determine whether it is a palindrome.
+mysql> CREATE TABLE WordTable (
+    ->     ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Word VARCHAR(5) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> INSERT INTO WordTable (Word)
+    -> VALUES
+    ->     ('level'), 
+    ->     ('radar'), 
+    ->     ('apple'), 
+    ->     ('civic'), 
+    ->     ('hello'); 
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE CheckPalindromeWords()
+    -> BEGIN
+    ->     SELECT Word,
+    ->            CASE
+    ->                WHEN Word = REVERSE(Word) THEN 'Palindrome'
+    ->                ELSE 'Not a Palindrome'
+    ->            END AS PalindromeStatus
+    ->     FROM WordTable;
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL CheckPalindromeWords();
++-------+------------------+
+| Word  | PalindromeStatus |
++-------+------------------+
+| level | Palindrome       |
+| radar | Palindrome       |
+| apple | Not a Palindrome |
+| civic | Palindrome       |
+| hello | Not a Palindrome |
++-------+------------------+
+
+5. Modify the above program to Select from any table a variable length word. This requires determining how many characters are read in.
+mysql> CREATE TABLE WordTab (
+    ->     ID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     Word VARCHAR(255) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+mysql> INSERT INTO WordTab (Word)
+    -> VALUES
+    ->     ('level'),
+    ->     ('radar'),
+    ->     ('apple'),
+    ->     ('civic'),
+    ->     ('hello'),
+    ->     ('madam'),
+    ->     ('world'),
+    ->     ('racecar');
+mysql> DELIMITER $$
+mysql>
+mysql> CREATE PROCEDURE CheckVariableLengthPalindrome()
+    -> BEGIN
+    ->     SELECT Word,
+    ->            LENGTH(Word) AS WordLength,
+    ->            CASE
+    ->                WHEN Word = REVERSE(Word) THEN 'Palindrome'
+    ->                ELSE 'Not a Palindrome'
+    ->            END AS PalindromeStatus
+    ->     FROM WordTab;
+    -> END$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL CheckVariableLengthPalindrome();
++---------+------------+------------------+
+| Word    | WordLength | PalindromeStatus |
++---------+------------+------------------+
+| level   |          5 | Palindrome       |
+| radar   |          5 | Palindrome       |
+| apple   |          5 | Not a Palindrome |
+| civic   |          5 | Palindrome       |
+| hello   |          5 | Not a Palindrome |
+| madam   |          5 | Palindrome       |
+| world   |          5 | Not a Palindrome |
+| racecar |          7 | Palindrome       |
++---------+------------+------------------+

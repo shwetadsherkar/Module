@@ -1,0 +1,36 @@
+Assignment –2
+
+Introducing Relational Databases.
+
+1) Which field of the Customers table is the primary key?
+---> cnum (customer no)
+
+2) What is the 4th column of the Customers table?
+---> Rating
+
+3) What is another word for row? For column?
+---> For ROW = Record /Entity /Tuple
+     For Column = Attribute /Field
+
+4) Why isn’t it possible to see the first five rows of a table?
+---> It is possible to see the first five rows of a table in SQL! However, the method depends on the SQL database you're using.
+(1)MySQL: Use the LIMIT clause:
+
+SELECT * FROM table_name
+LIMIT 5;
+
+(2)SQL Server: Use the TOP clause:
+
+SELECT TOP 5 * FROM table_name;
+
+(3)PostgreSQL: Similar to MySQL, use the LIMIT clause:
+
+sql
+SELECT * FROM table_name
+LIMIT 5;
+
+(4)Oracle SQL: Use the ROWNUM pseudocolumn:
+
+sql
+SELECT * FROM table_name
+WHERE ROWNUM <= 5;

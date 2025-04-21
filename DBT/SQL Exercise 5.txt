@@ -1,0 +1,173 @@
+SQL Exercise 5
+
+1. Display the Supplier name and the Quantity sold.
+-----> SELECT supplier.sname, SUM(spj.qty) AS total_quantity
+    -> FROM supplier
+    -> JOIN spj ON supplier.`s#` = spj.`s#`
+    -> GROUP BY supplier.sname;
++-----------+----------------+
+| sname     | total_quantity |
++-----------+----------------+
+| Supplier1 |            600 |
+| Supplier2 |            250 |
+| Supplier3 |            500 |
+| supplier4 |             50 |
+| Supplier8 |            900 |
+| Supplier5 |            850 |
++-----------+----------------+
+
+2. Display the Part name and Quantity sold.
+-----> SELECT parts.pname, SUM(spj.qty) AS total_quantity
+    -> FROM parts
+    -> JOIN spj ON parts.`p#` = spj.`p#`
+    -> GROUP BY parts.pname;
++--------+----------------+
+| pname  | total_quantity |
++--------+----------------+
+| parts7 |            650 |
+| parts4 |            650 |
+| Part1  |            650 |
+| parts5 |            350 |
+| Part2  |           1250 |
+| parts6 |            400 |
+| Part3  |            400 |
+| part6  |            900 |
++--------+----------------+
+
+3. Display the Project name and Quantity sold.
+mysql> SELECT PROJECTS.JNAME, SUM(spj.qty) AS total_quantity
+    -> FROM PROJECTS
+    -> JOIN SPJ ON PROJECTS.`J#` = spj.`J#`
+    -> GROUP BY PROJECTS.JNAME;
++----------+----------------+
+| JNAME    | total_quantity |
++----------+----------------+
+| Project1 |            750 |
+| Henliop  |           1150 |
+| Project2 |           1150 |
+| Project3 |           1250 |
++----------+----------------+
+4. Display the Supplier name, Part name, Project name and Quantity sold.
+mysql> SELECT supplier.sname ,
+    ->        parts.pname ,
+    ->        projects.jname ,
+    ->        spj.qty
+    -> FROM supplier
+    -> JOIN spj ON supplier.`s#` = spj.`s#`
+    -> JOIN parts ON spj.`p#` = parts.`p#`
+    -> JOIN projects ON spj.`j#` = projects.`j#`;
++-----------+--------+----------+------+
+| sname     | pname  | jname    | qty  |
++-----------+--------+----------+------+
+| supplier4 | Part1  | Project1 |   50 |
+| Supplier1 | Part1  | Project1 |  100 |
+| Supplier1 | Part1  | Project1 |  500 |
+| Supplier3 | Part2  | Project1 |  100 |
+| Supplier2 | Part2  | Henliop  |  200 |
+| Supplier2 | Part2  | Project2 |  200 |
+| Supplier2 | Part2  | Henliop  |   50 |
+| Supplier2 | Part2  | Project2 |   50 |
+| Supplier3 | Part3  | Project3 |  300 |
+| Supplier8 | part2  | Henliop  |  900 |
+| Supplier8 | part2  | Project2 |  900 |
++-----------+--------+----------+------+
+5. Display the Supplier name, Supplying Parts to a Project in the same City.
+mysql> SELECT supplier.sname,
+    ->        parts.pname,
+    ->        projects.jname 
+    -> FROM supplier
+    -> JOIN spj ON supplier.`s#` = spj.`s#`
+    -> JOIN parts ON spj.`p#` = parts.`p#`
+    -> JOIN projects ON spj.`j#` = projects.`j#`
+    -> WHERE supplier.city = projects.city;
++---------------+-----------+--------------+
+| Sname         | pname     | Jname        |
++---------------+-----------+--------------+
+| Supplier1     | Part1     | Project1     |
+| Supplier1     | Part1     | Project1     |
+| Supplier2     | Part2     | Project2     |
+| Supplier2     | Part2     | Project2     |
+| Supplier3     | Part3     | Project3     |
+| Supplier3     | Part3     | Project3     |
+| Supplier1     | parts4    | Project1     |
+| Supplier1     | parts4    | Project1     |
+| Supplier2     | parts5    | Project2     |
+| Supplier2     | parts5    | Project2     |
+| Supplier3     | parts6    | Project3     |
+| Supplier3     | parts6    | Project3     |
+| Supplier1     | parts7    | Project1     |
+| Supplier1     | parts7    | Project1     |
++---------------+-----------+--------------+
+
+6. Display the Part name that is ‘Red’ is color, and the Quantity sold.
+mysql> select parts.pname, sum(spj.qty)
+    -> from parts
+    -> join spj on parts.`p#` = spj.`p#`
+    -> where parts.color='Red'
+    -> group by parts.pname;
++--------+--------------+
+| pname  | sum(spj.qty) |
++--------+--------------+
+| parts7 |          650 |
+| Part1  |          650 |
++--------+--------------+
+
+7. Display all the Quantity sold by Suppliers with the Status = 20.
+mysqL> SELECT supplier.sname, sum(spj.qty)
+    -> from supplier
+    -> JOIN SPJ ON supplier.`s#` = spj.`s#`
+    -> WHERE supplier.status = 20
+    -> GROUP BY supplier.sname;
++-----------+--------------+
+| sname     | sum(spj.qty) |
++-----------+--------------+
+| Supplier2 |          250 |
++-----------+--------------+
+8. Display all the Parts and Quantity with a Weight > 14.
+mysql>  select parts.pname, sum(spj.qty)
+    -> from parts
+    ->  join spj on parts.`p#` = spj.`p#`
+    ->  where  PARTS.WEIGHT > 14
+    -> GROUP BY parts.pname;
++-------+--------------+
+| pname | sum(spj.qty) |
++-------+--------------+
+| Part2 |         1250 |
++-------+--------------+
+
+9. Display all the Project names and City, which has bought more than 500 Parts.
+mysql> SELECT projects.jname,
+    ->        projects.city
+    -> FROM projects
+    -> JOIN spj ON projects.`j#` = spj.`j#`
+    -> GROUP BY projects.jname, projects.city
+    -> HAVING SUM(spj.qty) > 500;
++----------+---------+
+| jname    | city    |
++----------+---------+
+| Project1 | Mumbai  |
+| Henliop  | pUNE    |
+| Project2 | Delhi   |
+| Project3 | Chennai |
++----------+---------+
+
+10. Display all the Part names and Quantity sold that have a Weight less than 15.
+mysql> SELECT parts.pname,
+    ->        SUM(spj.qty) AS Total_Quantity
+    -> FROM parts
+    -> JOIN spj ON parts.`p#` = spj.`p#`
+    -> WHERE parts.weight < 15
+    -> GROUP BY parts.pname;
++--------+----------------+
+| pname  | Total_Quantity |
++--------+----------------+
+| parts7 |            650 |
+| parts4 |            650 |
+| Part1  |            650 |
+| parts5 |            350 |
+| parts6 |            400 |
+| Part3  |            400 |
+| part6  |            900 |
++--------+----------------+
+
+11. Display all the Employee names and the name of their Managers.

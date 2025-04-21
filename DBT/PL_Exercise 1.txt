@@ -1,0 +1,239 @@
+MySQL
+Exercise 1
+1. Write a program that computes the perimeter and the area of a rectangle. Define your own values for the length and width. (Assuming that L and W are the length and width of the rectangle, Perimeter = 2*(L+W) and Area = L*W.
+-----> DELIMITER //
+mysql> CREATE PROCEDURE RectanglePerimeterArea(IN length FLOAT, IN width FLOAT)
+    -> BEGIN
+    ->     DECLARE perimeter FLOAT;
+    ->     DECLARE area FLOAT;
+    ->
+    ->     SET perimeter = 2 * (length + width);
+    ->     SET area = length * width;
+    ->
+    ->     INSERT INTO RectangleResults(length, width, perimeter, area)
+    ->     VALUES(length, width, perimeter, area);
+    ->
+    ->     SELECT perimeter AS Perimeter, area AS Area;
+    -> END //
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL RectanglePerimeterArea(5, 3);
++-----------+------+
+| Perimeter | Area |
++-----------+------+
+|        16 |   15 |
++-----------+------+
+1 row in set (0.03 sec)
+
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> SELECT * FROM RectangleResults;
++--------+-------+-----------+------+
+| length | width | perimeter | area |
++--------+-------+-----------+------+
+|      5 |     3 |        16 |   15 |
++--------+-------+-----------+------+
+2. Write a program that declares an integer variable called num, assigns a value to it, and computes and inserts into the tempp table the value of the variable itself, its square, and its cube.
+--->create table q2
+(
+num int(4),
+square int(4),
+num_cube int(4)
+);
+
+DELIMITER //
+create procedure que()
+begin
+  declare num int default 4;
+  declare square int;
+  declare num_cube int ;
+
+  set square = num*num;
+  set num_cube =  num*num*num;
+  
+    insert into q2 values(num, square, num_cube);
+END//
+
+mysql>call que()//
+Query OK, 1 row affected (0.03 sec)
+
++------+--------+----------+
+| num  | square | num_cube |
++------+--------+----------+
+|    4 |     16 |       64 |
++------+--------+----------+
+
+3. Convert a temperature in Fahrenheit (F) to its equivalent in Celsius (C) and vice versa. The required formulae are:- C= (F-32)*5/9
+F= 9/5*C + 32
+mysql> CREATE TABLE TemperatureConversion (
+    ->     ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Fahrenheit FLOAT,
+    ->     Celsius FLOAT
+    -> );
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE ConvertTemperature(
+    ->     IN temp_input FLOAT,
+    ->     IN conversion_type VARCHAR(10)
+    -> )
+    -> BEGIN
+    ->     DECLARE temp_output FLOAT;
+    ->
+    ->     IF conversion_type = 'F_to_C' THEN
+    ->         SET temp_output = (temp_input - 32) * 5 / 9;
+    ->
+    ->         INSERT INTO TemperatureConversion (Fahrenheit, Celsius)
+    ->         VALUES (temp_input, temp_output);
+    ->
+    ->     ELSEIF conversion_type = 'C_to_F' THEN
+    ->         SET temp_output = (temp_input * 9 / 5) + 32;
+    ->
+    ->         INSERT INTO TemperatureConversion (Fahrenheit, Celsius)
+    ->         VALUES (temp_output, temp_input);
+    ->
+    ->     ELSE
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Invalid conversion type. Use F_to_C or C_to_F.';
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql> CALL ConvertTemperature(98.6, 'F_to_C');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> CALL ConvertTemperature(37, 'C_to_F');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM TemperatureConversion;
++----+------------+---------+
+| ID | Fahrenheit | Celsius |
++----+------------+---------+
+|  1 |       98.6 |      37 |
+|  2 |       98.6 |      37 |
++----+------------+---------+
+
+4. Convert a number of inches into yards, feet, and inches. For example, 124 inches equals 3 yards, 1 foot, and 4 inches.
+mysql> CREATE TABLE Results (
+    ->     ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     TotalInches INT,
+    ->     Yards INT,
+    ->     Feet INT,
+    ->     RemInches INT
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE ConvertInches(IN total_inches INT)
+    -> BEGIN
+    ->     DECLARE yards INT;
+    ->     DECLARE feet INT;
+    ->     DECLARE rem_inches INT;
+    ->
+    ->
+    ->     SET yards = total_inches DIV 36;
+    ->     SET feet = (total_inches MOD 36) DIV 12;
+    ->     SET rem_inches = total_inches MOD 12;
+    ->
+    ->
+    ->     INSERT INTO Results (TotalInches, Yards, Feet, RemInches)
+    ->     VALUES (total_inches, yards, feet, rem_inches);
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL ConvertInches(124);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> SELECT * FROM Results;
++----+-------------+-------+------+-----------+
+| ID | TotalInches | Yards | Feet | RemInches |
++----+-------------+-------+------+-----------+
+|  1 |         124 |     3 |    1 |         4 |
++----+-------------+-------+------+-----------+
+1 row in set (0.00 sec)
+
+5. Write a program that enables a user to input an integer. The program should then state whether the integer is evenly divisible by 5.
+----> CREATE TABLE DivisibilityCheck (
+    ->     ID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     InputNumber INT,
+    ->     IsDivisible VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE CheckDivisibilityBy5(IN input_num INT)
+    -> BEGIN
+    ->     DECLARE result VARCHAR(50);
+    ->
+    ->     -- Check divisibility by 5
+    ->     IF input_num MOD 5 = 0 THEN
+    ->         SET result = 'Yes, divisible by 5';
+    ->     ELSE
+    ->         SET result = 'No, not divisible by 5';
+    ->     END IF;
+    ->
+    ->     -- Insert into the table
+    ->     INSERT INTO DivisibilityCheck (InputNumber, IsDivisible)
+    ->     VALUES (input_num, result);
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL CheckDivisibilityBy5(25);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> CALL CheckDivisibilityBy5(14);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM DivisibilityCheck;
++----+-------------+------------------------+
+| ID | InputNumber | IsDivisible            |
++----+-------------+------------------------+
+|  1 |          25 | Yes, divisible by 5    |
+|  2 |          14 | No, not divisible by 5 |
++----+-------------+------------------------+
+6. Your block should read in two real numbers and tell whether the product of the two numbers is equal to or greater than 100.
+mysql> CREATE PROCEDURE CheckProduct(IN num1 FLOAT, IN num2 FLOAT)
+    -> BEGIN
+    ->     DECLARE product FLOAT;
+    ->     DECLARE result VARCHAR(50);
+    ->
+    ->
+    ->     SET product = num1 * num2;
+    ->
+    ->
+    ->     IF product >= 100 THEN
+    ->         SET result = 'Product is equal to or greater than 100.';
+    ->     ELSE
+    ->         SET result = 'Product is less than 100.';
+    ->     END IF;
+    ->
+    ->
+    ->     INSERT INTO ProductCheck (Num1, Num2, Product, Result)
+    ->     VALUES (num1, num2, product, result);
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CALL CheckProduct(10, 10);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> CALL CheckProduct(5, 8);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM ProductCheck;
++----+------+------+---------+------------------------------------------+
+| ID | Num1 | Num2 | Product | Result                                   |
++----+------+------+---------+------------------------------------------+
+|  1 |   10 |   10 |     100 | Product is equal to or greater than 100. |
+|  2 |    5 |    8 |      40 | Product is less than 100.                |
++----+------+------+---------+------------------------------------------+

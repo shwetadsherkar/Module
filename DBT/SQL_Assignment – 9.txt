@@ -1,0 +1,82 @@
+Assignment – 9
+Querying Multiple Tables at Once.
+
+1) Write a query that lists each order number followed by the name of the customer who made the order.
+mysql> select o.onum,c.cnum,c.cname from orders o join customers c on o.cnum=c.cnum;
++------+------+----------+
+| onum | cnum | cname    |
++------+------+----------+
+| 3001 | 2008 | Cisneros |
+| 3003 | 2001 | Hoffman  |
+| 3002 | 2007 | Pereira  |
+| 3005 | 2003 | Liu      |
+| 3006 | 2008 | Cisneros |
+| 3009 | 2002 | Giovanni |
+| 3007 | 2004 | Grass    |
+| 3008 | 2006 | Clemens  |
+| 3010 | 2004 | Grass    |
+| 3011 | 2006 | Clemens  |
++------+------+----------+
+
+2) Write a query that gives the names of both the salesperson and the customer for each order along with the order number.
+mysql> select o.onum,c.cname,s.sname from orders o join customers c on o.cnum=c.cnum join salespeople s on o.snum=s.snum;
++------+----------+---------+
+| onum | cname    | sname   |
++------+----------+---------+
+| 3001 | Cisneros | Rifkin  |
+| 3003 | Hoffman  | Peel    |
+| 3002 | Pereira  | Motika  |
+| 3005 | Liu      | Serres  |
+| 3006 | Cisneros | Rifkin  |
+| 3009 | Giovanni | Axelrod |
+| 3007 | Grass    | Serres  |
+| 3008 | Clemens  | Peel    |
+| 3010 | Grass    | Serres  |
+| 3011 | Clemens  | Peel    |
++------+----------+---------+
+
+3) Write a query that produces all customers serviced by salespeople with a commission above 12%. Output the customer’s name, the salesperson’s name, and the salesperson’s rate of commission.
+mysql> select c.cname,s.sname,s.comm from orders o join customers c on o.cnum=c.cnum join salespeople s on o.snum=s.snum where s.comm>12;
+Empty set
+
+mysql> select c.cname,s.sname,s.comm from orders o join customers c on o.cnum=c.cnum join salespeople s on o.snum=s.snum where s.comm>0.12;
++----------+--------+------+
+| cname    | sname  | comm |
++----------+--------+------+
+| Cisneros | Rifkin | 0.15 |
+| Liu      | Serres | 0.13 |
+| Cisneros | Rifkin | 0.15 |
+| Grass    | Serres | 0.13 |
+| Grass    | Serres | 0.13 |
++----------+--------+------+
+
+4) Write a query that calculates the amount of the salesperson’s commission on each order by a customer with a rating above 100.
+mysql> SELECT
+    ->     o.Onum,
+    ->     c.Cname,
+    ->     s.Sname,
+    ->     c.Rating,
+    ->     (o.amt * c.Rating / 100)
+    -> FROM
+    ->     Orders o
+    -> JOIN
+    ->     Customers c
+    -> ON
+    ->     o.Cnum = c.Cnum
+    -> JOIN
+    ->     Salespeople s
+    -> ON
+    ->     o.Snum = s.Snum
+    ->
+    -> WHERE
+    ->     c.Rating > 100;
++------+----------+---------+--------+--------------------------+
+| Onum | Cname    | Sname   | Rating | (o.amt * c.Rating / 100) |
++------+----------+---------+--------+--------------------------+
+| 3010 | Grass    | Serres  |    300 |              3929.849854 |
+| 3007 | Grass    | Serres  |    300 |               227.250000 |
+| 3005 | Liu      | Serres  |    200 |             10320.900391 |
+| 3006 | Cisneros | Rifkin  |    300 |              3294.480103 |
+| 3001 | Cisneros | Rifkin  |    300 |                56.070002 |
+| 3009 | Giovanni | Axelrod |    200 |              3426.459961 |
++------+----------+---------+--------+--------------------------+

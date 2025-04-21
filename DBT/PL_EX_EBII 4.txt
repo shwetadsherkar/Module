@@ -1,0 +1,207 @@
+
+MySQL
+Exercise 4
+
+1. The CUSTOMER table of a state electricity board consists of the following fields:-
+
+Meter Number Varchar 4
+
+Meter Type Char 1
+
+Previous Reading Int 5
+
+Current Reading Int 5
+
+Customer Type Char 1
+
+Last Bill payment Char 1 (values could be ‘Y’ or ‘N’)
+
+There are two types of meters viz. 3- phase or 1-phase coded as ‘T’ or ‘S’ respectively. There are 4 types of customers viz. Agricultural Industrial, Commercial and Residential with codes ‘A’ , ‘I’, ‘C’ and ‘R’ respectively.
+
+Formulae:-
+Units used = Current Reading – Previous Reading Rate =Rs.1/ 1.25/ 1.50/ 1.30 for A/I/C/R respectively.
+Amount = rate*units used
+Surcharge = 5% for single phase
+10% for 3 phase
+Excise = 30% of (amount +Surcharge)
+Net = Amount +Surcharge + Excise
+
+Write a block to calculate the bill for each customer. The program should insert the Meter no., Units used, Rate, Amount, Surcharge, Excise duty and Net for each customer into some other suitable table. Also, at the end, it should insert the total Amount, Surcharge, Excise and Net into some other table.
+mysql> DELIMITER //
+mysql>
+mysql> CREATE PROCEDURE CalculateElectricityBill()
+    -> BEGIN
+    ->     -- Declare variables for totals
+    ->     DECLARE TotalAmount DECIMAL(10,2);
+    ->     DECLARE TotalSurcharge DECIMAL(10,2);
+    ->     DECLARE TotalExciseDuty DECIMAL(10,2);
+    ->     DECLARE TotalNetAmount DECIMAL(10,2);
+    ->
+    ->     -- Initialize totals
+    ->     SET TotalAmount = 0;
+    ->     SET TotalSurcharge = 0;
+    ->     SET TotalExciseDuty = 0;
+    ->     SET TotalNetAmount = 0;
+    ->
+    ->     -- Loop through customer records
+    ->     INSERT INTO BillDetails (MeterNumber, UnitsUsed, Rate, Amount, Surcharge, ExciseDuty, NetAmount)
+    ->     SELECT
+    ->         MeterNumber,
+    ->         CurrentReading - PreviousReading AS UnitsUsed,
+    ->         CASE
+    ->             WHEN CustomerType = 'A' THEN 1
+    ->             WHEN CustomerType = 'I' THEN 1.25
+    ->             WHEN CustomerType = 'C' THEN 1.50
+    ->             WHEN CustomerType = 'R' THEN 1.30
+    ->         END AS Rate,
+    ->         CASE
+    ->             WHEN CustomerType = 'A' THEN 1
+    ->             WHEN CustomerType = 'I' THEN 1.25
+    ->             WHEN CustomerType = 'C' THEN 1.50
+    ->             WHEN CustomerType = 'R' THEN 1.30
+    ->         END * (CurrentReading - PreviousReading) AS Amount,
+    ->         CASE
+    ->             WHEN MeterType = 'S' THEN 0.05 * (
+    ->                 CASE
+    ->                     WHEN CustomerType = 'A' THEN 1
+    ->                     WHEN CustomerType = 'I' THEN 1.25
+    ->                     WHEN CustomerType = 'C' THEN 1.50
+    ->                     WHEN CustomerType = 'R' THEN 1.30
+    ->                 END * (CurrentReading - PreviousReading))
+    ->             WHEN MeterType = 'T' THEN 0.10 * (
+    ->                 CASE
+    ->                     WHEN CustomerType = 'A' THEN 1
+    ->                     WHEN CustomerType = 'I' THEN 1.25
+    ->                     WHEN CustomerType = 'C' THEN 1.50
+    ->                     WHEN CustomerType = 'R' THEN 1.30
+    ->                 END * (CurrentReading - PreviousReading))
+    ->         END AS Surcharge,
+    ->         0.30 * (
+    ->             (CASE
+    ->                 WHEN CustomerType = 'A' THEN 1
+    ->                 WHEN CustomerType = 'I' THEN 1.25
+    ->                 WHEN CustomerType = 'C' THEN 1.50
+    ->                 WHEN CustomerType = 'R' THEN 1.30
+    ->             END * (CurrentReading - PreviousReading)) +
+    ->             CASE
+    ->                 WHEN MeterType = 'S' THEN 0.05 * (
+    ->                     CASE
+    ->                         WHEN CustomerType = 'A' THEN 1
+    ->                         WHEN CustomerType = 'I' THEN 1.25
+    ->                         WHEN CustomerType = 'C' THEN 1.50
+    ->                         WHEN CustomerType = 'R' THEN 1.30
+    ->                     END * (CurrentReading - PreviousReading))
+    ->                 WHEN MeterType = 'T' THEN 0.10 * (
+    ->                     CASE
+    ->                         WHEN CustomerType = 'A' THEN 1
+    ->                         WHEN CustomerType = 'I' THEN 1.25
+    ->                         WHEN CustomerType = 'C' THEN 1.50
+    ->                         WHEN CustomerType = 'R' THEN 1.30
+    ->                     END * (CurrentReading - PreviousReading))
+    ->             END
+    ->         ) AS ExciseDuty,
+    ->         (CASE
+    ->             WHEN CustomerType = 'A' THEN 1
+    ->             WHEN CustomerType = 'I' THEN 1.25
+    ->             WHEN CustomerType = 'C' THEN 1.50
+    ->             WHEN CustomerType = 'R' THEN 1.30
+    ->         END * (CurrentReading - PreviousReading)) +
+    ->         CASE
+    ->             WHEN MeterType = 'S' THEN 0.05 * (
+    ->                 CASE
+    ->                     WHEN CustomerType = 'A' THEN 1
+    ->                     WHEN CustomerType = 'I' THEN 1.25
+    ->                     WHEN CustomerType = 'C' THEN 1.50
+    ->                     WHEN CustomerType = 'R' THEN 1.30
+    ->                 END * (CurrentReading - PreviousReading))
+    ->             WHEN MeterType = 'T' THEN 0.10 * (
+    ->                 CASE
+    ->                     WHEN CustomerType = 'A' THEN 1
+    ->                     WHEN CustomerType = 'I' THEN 1.25
+    ->                     WHEN CustomerType = 'C' THEN 1.50
+    ->                     WHEN CustomerType = 'R' THEN 1.30
+    ->                 END * (CurrentReading - PreviousReading))
+    ->         END +
+    ->         0.30 * (
+    ->             (CASE
+    ->                 WHEN CustomerType = 'A' THEN 1
+    ->                 WHEN CustomerType = 'I' THEN 1.25
+    ->                 WHEN CustomerType = 'C' THEN 1.50
+    ->                 WHEN CustomerType = 'R' THEN 1.30
+    ->             END * (CurrentReading - PreviousReading)) +
+    ->             CASE
+    ->                 WHEN MeterType = 'S' THEN 0.05 * (
+    ->                     CASE
+    ->                         WHEN CustomerType = 'A' THEN 1
+    ->                         WHEN CustomerType = 'I' THEN 1.25
+    ->                         WHEN CustomerType = 'C' THEN 1.50
+    ->                         WHEN CustomerType = 'R' THEN 1.30
+    ->                     END * (CurrentReading - PreviousReading))
+    ->                 WHEN MeterType = 'T' THEN 0.10 * (
+    ->                     CASE
+    ->                         WHEN CustomerType = 'A' THEN 1
+    ->                         WHEN CustomerType = 'I' THEN 1.25
+    ->                         WHEN CustomerType = 'C' THEN 1.50
+    ->                         WHEN CustomerType = 'R' THEN 1.30
+    ->                     END * (CurrentReading - PreviousReading))
+    ->             END
+    ->         ) AS NetAmount
+    ->     FROM Customer;
+    ->
+    ->     -- Calculate totals
+    ->     SELECT
+    ->         SUM(Amount),
+    ->         SUM(Surcharge),
+    ->         SUM(ExciseDuty),
+    ->         SUM(NetAmount)
+    ->     INTO TotalAmount, TotalSurcharge, TotalExciseDuty, TotalNetAmount
+    ->     FROM BillDetails;
+    ->
+    ->     -- Insert totals into summary table
+    ->     INSERT INTO BillSummary (TotalAmount, TotalSurcharge, TotalExciseDuty, TotalNetAmount)
+    ->     VALUES (TotalAmount, TotalSurcharge, TotalExciseDuty, TotalNetAmount);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.17 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> CREATE TABLE CUSTOMER (
+    ->     MeterNumber VARCHAR(4),
+    ->     MeterType CHAR(1),
+    ->     PreviousReading INT,
+    ->     CurrentReading INT,
+    ->     CustomerType CHAR(1),
+    ->     LastBillPayment CHAR(1)
+    -> );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> INSERT INTO CUSTOMER (MeterNumber, MeterType, PreviousReading, CurrentReading, CustomerType, LastBillPayment)
+    -> VALUES
+    ->     ('M101', 'S', 500, 700, 'R', 'Y'),
+    ->     ('M102', 'T', 1200, 1500, 'I', 'N'),
+    ->     ('M103', 'S', 300, 600, 'A', 'Y'),
+    ->     ('M104', 'T', 800, 1000, 'C', 'Y');
+Query OK, 4 rows affected (0.03 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> CALL CalculateElectricityBill();
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM BillDetails;
++-------------+-----------+------+--------+-----------+------------+-----------+
+| MeterNumber | UnitsUsed | Rate | Amount | Surcharge | ExciseDuty | NetAmount |
++-------------+-----------+------+--------+-----------+------------+-----------+
+| M101        |       200 | 1.30 | 260.00 |     13.00 |      81.90 |    354.90 |
+| M102        |       300 | 1.25 | 375.00 |     37.50 |     123.75 |    536.25 |
+| M103        |       300 | 1.00 | 300.00 |     15.00 |      94.50 |    409.50 |
+| M104        |       200 | 1.50 | 300.00 |     30.00 |      99.00 |    429.00 |
++-------------+-----------+------+--------+-----------+------------+-----------+
+mysql> SELECT * FROM BillSummary;
++-------------+----------------+-----------------+----------------+
+| TotalAmount | TotalSurcharge | TotalExciseDuty | TotalNetAmount |
++-------------+----------------+-----------------+----------------+
+|        NULL |           NULL |            NULL |           NULL |
+|     1235.00 |          95.50 |          399.15 |        1729.65 |
++-------------+----------------+-----------------+----------------+
+

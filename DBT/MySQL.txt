@@ -1,0 +1,38 @@
+MySQL
+Exercise 5
+1. Write a stored function to take three parameters, the sides of a triangle. The sides of the triangle should be accepted from the user. The function should return a Boolean value:- true if the triangle is valid, false otherwise. A triangle is valid if the length of each side is less than the sum of the lengths of the other two sides. Check if the dimensions entered can form a valid triangle.
+mysql> DELIMITER //
+mysql>
+mysql> CREATE FUNCTION IsValidTriangle(a DOUBLE, b DOUBLE, c DOUBLE)
+    -> RETURNS BOOLEAN
+    -> DETERMINISTIC
+    -> BEGIN
+    ->
+    ->     IF (a + b > c) AND (a + c > b) AND (b + c > a) THEN
+    ->         RETURN TRUE;
+    ->     ELSE
+    ->         RETURN FALSE;
+    ->     END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> DELIMITER ;
+mysql> SELECT IsValidTriangle(3, 4, 5) AS IsTriangle; -- Output: TRUE
++------------+
+| IsTriangle |
++------------+
+|          1 |
++------------+
+1 row in set (0.01 sec)
+
+mysql> SELECT IsValidTriangle(1, 2, 3) AS IsTriangle; -- Output: FALSE
++------------+
+| IsTriangle |
++------------+
+|          0 |
++------------+
+
+2. Write a function that generates a random number between 1 and 10. Use any logic of your choice to achieve this.
+3. Create a function that accepts a string of n characters and exchanges the first character with the last, the second with the next – to – last, and so forth until n exchanges have been made. What will the final string look like? Write the function to verify your conclusion.
